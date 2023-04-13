@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Планировщик задач</title>
+    <script src="{% static "bootstrap.min.js" %}"></script>
+    <link rel="stylesheet" href="{% static "bootstrap.min.css" %}" />
+</head>
+<body>
+    <br>
+    <form action="{% url 'tasks' %}" method="get">
+        {% csrf_token %}
+        <div class="form-floating">
+            <input type="text" class="form-control" id="floatingTitle" placeholder="Название" name="Title">
+            <label for="floatingTitle">Название задачи</label>
+          </div>
+              <br>
+              <div class="form-floating">
+                <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea" name="description"></textarea>
+                <label for="floatingTextarea">Описание задачи</label>
+              </div>
+              <br>
+              <div class="form-floating">
+                <select class="form-select" id="floatingSelect" aria-label="Floating label select example" name="status">
+                  <option selected>Добавлена</option>
+                  <option>В Работе</option>
+                    <option>Выполнена</option>
+                </select>
+                <label for="floatingSelect">Статус задачи</label>
+              </div>
+              <br>
+          <div class="form-group">
+            <button type="submit" class="btn btn-primary">Добавить</button>
+          </div>
+    </form>
+    <hr>
+    <br>
+    <ul class="list-group list-group-flush">
+        {% for el in Задачи %}
+        {% if el.Состояние == "В Работе" %}
+        <li class="list-group-item list-group-item-action flex-column align-items-start active">
+        {% elif el.Состояние == "Добавлена"%}
+        <li class="list-group-item list-group-item-action flex-column align-items-start">
+        {% elif el.Состояние == "Выполнена"%}
+        <li class="list-group-item list-group-item-action flex-column align-items-start">
+        {% else %}
+        <li class="list-group-item list-group-item-action flex-column align-items-start">
+        {% endif %}
+        <div class="d-flex w-100 justify-content-between">
+        <h5 class="mb-1">{{el.Имя}}</h5>
+        <small>{{el.Состояние}}</small>
+        <small>{{el.Время}}</small>
+        </div>
+        <p class="mb-1">{{el.Описание}}</p>
+        <div class="btn-group">
+          {% if el.Состояние == "В Работе" %}
+          <a href="{% url 'change' el.id "Добавлена" %}" class="btn btn-info">Добавлена</a>
+          <!-- <a href="#" class="btn btn-info disabled">В работе</a> -->
+          <a href="{% url 'change' el.id "Выполнена" %}" class="btn btn-danger">Выполнена</a>
+        {% elif el.Состояние == "Добавлена"%}
+        <!-- <a href="#" class="btn btn-info disabled">Добавлена</a> -->
+          <a href="{% url 'change' el.id "В Работе" %}" class="btn btn-info">В Работе</a>
+          <a href="{% url 'change' el.id "Выполнена" %}" class="btn btn-danger">Выполнена</a>
+        {% elif el.Состояние == "Выполнена"%}
+        <a href="{% url 'change' el.id "Удалить" %}" class="btn-close" aria-label="Close"></a>
+          <!-- Может выводить ошибку в функции, но так надо -->
+        {% endif %}
+        </div>
+      </li>
+        {% endfor %}
+      </ul>
+      <script>
+        function Delete_Task(id) {
+          console.log("Удалена запись "+id );          
+        }
+      </script>
+</body>
+</html>
